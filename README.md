@@ -1,20 +1,56 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 🌊🚀 **HydroNav – Tactical Navigation Pipeline**
 
-# Run and deploy your AI Studio app
+> **Mission Objective:** Provide intelligent, flood-aware navigation using real-time data, adaptive routing, and a futuristic HUD experience.
 
-This contains everything you need to run your app locally.
+---
 
-View your app in AI Studio: https://ai.studio/apps/drive/1Q9iKI9NE9TZ2C4o8blkbCE9nbnm37_gx
+## 🟢 **1. System Boot & Calibration**
 
-## Run Locally
+✨ The application initializes a **futuristic HUD interface**, locks onto a **GPS signal**, and applies a **Low-Pass Filter** to stabilize the vehicle’s positional data, ensuring smooth and accurate navigation from the very start.
 
-**Prerequisites:**  Node.js
+---
 
+## 🎯 **2. Target Acquisition**
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+🗺️ The user selects a destination. HydroNav instantly fetches **real-time map data** along with the latest **flood topography**, building a situationally aware navigation model.
+
+---
+
+## ⚠️ **3. Threat Analysis**
+
+🔍 A **Ray Casting algorithm** is executed to determine whether the direct route polyline intersects with any **active flood polygons** (hazard zones).
+
+---
+
+## 🧭 **4. Adaptive Detour**
+
+🛠️ If a threat is detected, the routing engine dynamically generates **perpendicular detour waypoints**, calculating the safest possible alternative paths around the flood hazard.
+
+---
+
+## 🕶️ **5. Tactical HUD Deployment**
+
+🎮 Once navigation begins, the map transitions into a **3D cockpit-style perspective**, displaying:
+
+* 🚗 Real-time speed
+* ⏱️ Estimated Time of Arrival (ETA)
+* 🔊 Turn-by-turn **voice-guided navigation**
+
+---
+
+## 🔄 **6. Live Mitigation**
+
+🌐 While driving, HydroNav continuously **re-scans the environment**. If a new flood zone emerges mid-route, the system triggers an **automatic real-time reroute**, ensuring uninterrupted safety.
+
+---
+
+## 🧠 **Core Capabilities at a Glance**
+
+✅ Real-time flood detection
+✅ Intelligent hazard avoidance
+✅ Continuous live rerouting
+✅ Immersive 3D HUD experience
+
+---
+
+> 🛡️ **HydroNav doesn’t just navigate — it anticipates, adapts, and protects.**
