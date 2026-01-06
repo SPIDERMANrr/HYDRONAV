@@ -1,0 +1,7 @@
+{
+  "name": "HydroNav - Flood Aware Navigation",
+  "description": "Professional real-time navigation system with integrated flood detection and dynamic avoidance routing.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

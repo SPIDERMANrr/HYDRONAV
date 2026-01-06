@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HydroNav - Flood Aware Navigation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Futuristic Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.1/",
+    "react": "https://aistudiocdn.com/react@^19.2.1",
+    "leaflet/": "https://aistudiocdn.com/leaflet@^1.9.4/",
+    "leaflet": "https://aistudiocdn.com/leaflet@^1.9.4",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.556.0"
+  }
+}
+</script>
+<style>
+  :root {
+    --neon-cyan: #00f3ff;
+    --neon-blue: #0066ff;
+    --neon-purple: #bd00ff;
+    --glass-bg: rgba(10, 15, 30, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.08);
+  }
+
+  body {
+    font-family: 'Rajdhani', sans-serif;
+    background-color: #050a1f;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  /* --- INTRO PAGE STYLES --- */
+
+  /* Deep Space Aurora Background */
+  .intro-bg {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #050a1f;
+    background-image: 
+      radial-gradient(circle at 15% 50%, rgba(0, 102, 255, 0.15), transparent 25%),
+      radial-gradient(circle at 85% 30%, rgba(189, 0, 255, 0.15), transparent 25%);
+    z-index: 0;
+  }
+
+  .aurora-wave {
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: conic-gradient(
+      from 180deg at 50% 50%,
+      #050a1f 0deg,
+      #0a1535 60deg,
+      rgba(0, 243, 255, 0.1) 120deg,
+      rgba(189, 0, 255, 0.1) 180deg,
+      #0a1535 240deg,
+      #050a1f 360deg
+    );
+    animation: rotate-aurora 20s linear infinite;
+    opacity: 0.6;
+    filter: blur(80px);
+    z-index: 1;
+  }
+
+  @keyframes rotate-aurora {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Star Field Particles */
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0;
+    animation: twinkle var(--duration) ease-in-out infinite;
+    animation-delay: var(--delay);
+  }
+
+  @keyframes twinkle {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1); opacity: var(--opacity); box-shadow: 0 0 10px white; }
+    100% { transform: scale(0); opacity: 0; }
+  }
+
+  /* Glassmorphic 3D Card */
+  .glass-card-intro {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+      0 0 0 1px rgba(255, 255, 255, 0.05),
+      0 20px 50px rgba(0, 0, 0, 0.5),
+      inset 0 0 60px rgba(0, 243, 255, 0.05);
+    transform-style: preserve-3d;
+    transform: perspective(1000px);
+    transition: transform 0.1s ease-out;
+  }
+
+  /* Neon Text Effects */
+  .text-glow-cyan {
+    text-shadow: 
+      0 0 10px rgba(0, 243, 255, 0.5),
+      0 0 20px rgba(0, 243, 255, 0.3),
+      0 0 40px rgba(0, 243, 255, 0.1);
+  }
+  
+  .title-gradient {
+    background: linear-gradient(to bottom, #ffffff, #a5f3fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.4));
+  }
+
+  /* Magical Button */
+  .magical-btn {
+    position: relative;
+    background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.1), transparent);
+    border: 1px solid rgba(0, 243, 255, 0.3);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+  }
+
+  .magical-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: 0.5s;
+  }
+
+  .magical-btn:hover {
+    border-color: rgba(0, 243, 255, 0.8);
+    box-shadow: 
+      0 0 20px rgba(0, 243, 255, 0.4),
+      0 0 40px rgba(0, 243, 255, 0.2),
+      inset 0 0 20px rgba(0, 243, 255, 0.2);
+    transform: scale(1.05);
+    background: rgba(0, 243, 255, 0.05);
+  }
+
+  .magical-btn:hover::before {
+    left: 100%;
+    transition: 0.7s;
+  }
+
+  .btn-pulse {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    border: 2px solid var(--neon-cyan);
+    opacity: 0;
+    transform: scale(1);
+    animation: pulse-ring 2s infinite;
+  }
+
+  @keyframes pulse-ring {
+    0% { transform: scale(0.9); opacity: 1; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
+
+  /* Intro Exit Animation */
+  .intro-exit {
+    opacity: 0;
+    transform: scale(1.1);
+    filter: blur(20px);
+    transition: all 0.8s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+    pointer-events: none;
+  }
+
+  /* --- APP MAP STYLING --- */
+  .dark-map-tiles {
+    filter: brightness(1.25) contrast(1.1) saturate(1.1);
+  }
+
+  .map-container-3d {
+     perspective: 1200px;
+     overflow: hidden;
+  }
+  
+  .map-view-3d .leaflet-map-pane {
+     transform: rotateX(50deg) scale(1.4); 
+     transform-origin: center 80%; 
+     transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .map-view-normal .leaflet-map-pane {
+     transform: rotateX(0deg) scale(1);
+     transform-origin: center center;
+     transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .leaflet-control-attribution {
+    background: transparent !important;
+    color: #64748b !important;
+    font-size: 10px;
+  }
+
+  @keyframes border-march {
+    0% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: 40; }
+  }
+
+  .flood-zone-border {
+    stroke-dasharray: 10, 10;
+    animation: border-march 2s linear infinite;
+    filter: drop-shadow(0 0 8px #f43f5e);
+  }
+  
+  @keyframes route-pulse-anim {
+    0% { stroke-opacity: 0.7; stroke-width: 5; filter: drop-shadow(0 0 2px #06b6d4); }
+    50% { stroke-opacity: 1; stroke-width: 8; filter: drop-shadow(0 0 10px #06b6d4); }
+    100% { stroke-opacity: 0.7; stroke-width: 5; filter: drop-shadow(0 0 2px #06b6d4); }
+  }
+  .route-pulse {
+    animation: route-pulse-anim 2s ease-in-out infinite;
+  }
+
+  .smooth-marker-transition {
+      transition: transform 0.5s linear;
+  }
+
+  /* UI UTILITIES */
+  .glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--neon-cyan); }
+
+  @keyframes ripple {
+    0% { transform: scale(0.8); opacity: 1; }
+    100% { transform: scale(2.4); opacity: 0; }
+  }
+</style>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="overflow-hidden selection:bg-cyan-500/30 selection:text-cyan-100">
+    <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" aria-hidden="true">
+      <defs>
+        <pattern id="diagonal-hazard" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <rect width="12" height="12" fill="#450a0a" fill-opacity="0.2" /> 
+          <line x1="0" y1="0" x2="0" y2="12" stroke="#f43f5e" stroke-width="3" stroke-opacity="0.9" />
+        </pattern>
+      </defs>
+    </svg>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
